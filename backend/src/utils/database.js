@@ -1,4 +1,4 @@
-import pool from '../db/index.js';
+import {pool} from '../db/index.js';
 
 const createTable = async () => {
     try {
@@ -11,7 +11,7 @@ const createTable = async () => {
                 refresh_token TEXT NOT NULL,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-                deleted_at TIMESTAMP DEFAULT NULL,
+                deleted_at TIMESTAMP DEFAULT NULL
             );`
         )
     } catch (error) {

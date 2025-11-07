@@ -8,4 +8,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 
+import userRoutes from "./routes/user.route.js";
+
+app.use("/api/users", userRoutes);
+
 export {app};
