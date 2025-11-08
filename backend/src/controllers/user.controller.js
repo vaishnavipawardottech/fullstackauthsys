@@ -64,13 +64,38 @@ export const loginUser = asyncHandler(async (req, res) => {
         const accessToken = generateAccessToken(tokenPayload);
         const refreshToken = generateRefreshToken(tokenPayload);
 
+        // const cookieOptions = {
+        //     httpOnly: true,     // not accessible by JS (prevents XSS)
+        //     secure: process.env.NODE_ENV === "production", // only https in prod
+        //     sameSite: "strict",      // prevents CSRF
+        // }
+
         await pool.query("UPDATE users SET refresh_token = ? WHERE id = ?", [refreshToken, user.id]);
 
         delete user.password;
         delete user.refresh_token;
 
-        return res 
+        // Set cookies
+        const accessOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 1 day for access token
+            path: '/'
+        };
+
+        const refreshOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
+            path: '/'
+        };
+
+        return res
             .status(200)
+            .cookie("refreshToken", refreshToken, refreshOptions)
+            .cookie("accessToken", accessToken, accessOptions)
             .json(new ApiResponse(200, { user, accessToken, refreshToken }, "User login successfully"));
 
     } catch (error) {
@@ -86,9 +111,18 @@ export const logout = asyncHandler(async (req, res) => {
         const userId = req.user.id;
     
         await pool.query("UPDATE users SET refresh_token = NULL WHERE id = ?", [userId]);
+
+        const options = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            path: '/'
+        };
     
         return res
             .status(200)
+            .clearCookie("accessToken", options)
+            .clearCookie("refreshToken", options)
             .json(new ApiResponse(200, "User logged out successfully"));
     } catch (error) {
         console.log("error while logging out: ", error);
@@ -100,7 +134,7 @@ export const logout = asyncHandler(async (req, res) => {
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
     try {
-        const { refreshToken } = req.body;
+        const { refreshToken } = req.cookies.refreshToken;
         if (!refreshToken) {
             throw new ApiError(400, "Refresh token is required");
         }
@@ -109,6 +143,23 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
         if (users.length === 0 || users[0].refresh_token !== refreshToken) {
             throw new ApiError(401, "Invalid refresh token");
         }
+
+        const accessOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 24 * 60 * 60 * 1000, // 1 day for access token
+            path: '/'
+        };
+
+        const refreshOptions = {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+            maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days for refresh token
+            path: '/'
+        };
+
         const newAccessToken = generateAccessToken({
             id: users[0].id,
             email: users[0].email,
@@ -117,6 +168,8 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
 
         return res 
             .status(200)
+            .cookie("accessToken", newAccessToken, accessOptions)
+            .cookie("refreshToken", refreshToken, refreshOptions)
             .json(new ApiResponse(200, { accessToken: newAccessToken }, "Access token refreshed successfully"));
 
     } catch (error) {
