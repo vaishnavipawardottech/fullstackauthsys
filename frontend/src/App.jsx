@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react'
 import './App.css'
-import { BrowserRouter, Routes, Route, Link } from 'react-router-dom'
+import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
 import Dashboard from './components/Dashboard'
+import Navbar from './components/Navbar'
 import { useDispatch } from 'react-redux'
 import { refreshAccessToken } from './store/slices/authSlice'
 
@@ -17,11 +18,7 @@ function App() {
 
   return (
     <BrowserRouter>
-      <nav style={{ padding: 12 }}>
-        <Link to="/" style={{ marginRight: 12 }}>Login</Link>
-        <Link to="/register" style={{ marginRight: 12 }}>Register</Link>
-        <Link to="/dashboard">Dashboard</Link>
-      </nav>
+      <Navbar />
 
       <Routes>
         <Route path="/" element={<LoginForm />} />
