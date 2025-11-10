@@ -4,7 +4,6 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
 import Dashboard from './components/Dashboard'
-import Navbar from './components/Navbar'
 import Welcome from './components/Welcome'
 import { useDispatch } from 'react-redux'
 import { refreshAccessToken } from './store/slices/authSlice'
@@ -19,7 +18,6 @@ function App() {
 
   return (
     <BrowserRouter>
-      <Navbar />
 
       <Routes>
         <Route path="/login" element={<LoginForm />} />

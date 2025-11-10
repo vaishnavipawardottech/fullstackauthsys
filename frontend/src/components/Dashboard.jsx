@@ -1,10 +1,13 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import Navbar from './Navbar'
 import { Mail, Phone, ArrowRight, LogIn } from 'lucide-react'
 
 export default function Dashboard() {
   return (
-    <div className="min-h-screen flex flex-col">
+    <div>
+      <Navbar />
+    <div className="min-h-screen flex flex-col bg-gray-50">
       <main className="grow flex items-center justify-center container mx-auto px-6 py-8">
         <section className="max-w-3xl mx-auto text-center py-6">
           <h1 className="text-4xl font-extrabold mb-4">Welcome to AuthSys</h1>
@@ -54,6 +57,7 @@ export default function Dashboard() {
           <div className="container mx-auto px-6 py-3 text-sm text-gray-400 text-center">© 2025 AuthSys. All rights reserved.</div>
         </div>
       </footer>
+    </div>
     </div>
   )
 }
