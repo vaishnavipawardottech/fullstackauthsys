@@ -1,16 +1,11 @@
 import axios from 'axios';
 
-const api = axios.create({
-  baseURL: 'http://localhost:3000',
-  withCredentials: true, // send/receive cookies for refresh-token
-});
+// Use Vite env var in frontend: VITE_API_URL. Falls back to localhost for local dev.
+const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
 
-// export function setAuthToken(token) {
-//   if (token) {
-//     api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-//   } else {
-//     delete api.defaults.headers.common['Authorization'];
-//   }
-// }
+const api = axios.create({
+  baseURL: BASE_URL,
+  withCredentials: true, // send/receive httpOnly cookies for refresh-token
+});
 
 export default api;
