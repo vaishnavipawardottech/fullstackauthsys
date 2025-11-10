@@ -17,9 +17,10 @@ export const registerUser = createAsyncThunk(
 // Login
 export const loginUser = createAsyncThunk(
   'auth/login',
-  async ({email, password}, { rejectWithValue }) => {
+  async ({ username, email, password }, { rejectWithValue }) => {
     try {
-      const res = await api.post('/api/users/login', {email, password});
+      const payload = username ? { username, password } : { email, password };
+      const res = await api.post('/api/users/login', payload);
       return res.data;
     } catch (err) {
       return rejectWithValue(err.response?.data?.message || err.message);
@@ -104,7 +105,14 @@ const authSlice = createSlice({
       .addCase(loginUser.fulfilled, (state, action) => {
         state.loading = false;
         // expected shape: { user, accessToken }
-        if (action.payload?.user) state.user = action.payload.user;
+        // backend wraps response in ApiResponse { statusCode, data, message }
+        const payloadData = action.payload?.data ?? action.payload;
+        if (payloadData?.user) {
+          state.user = payloadData.user;
+        } else if (payloadData?.id || payloadData?.username) {
+          // if backend returned the user object directly
+          state.user = payloadData;
+        }
         // if (action.payload?.accessToken) state.accessToken = action.payload.accessToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
