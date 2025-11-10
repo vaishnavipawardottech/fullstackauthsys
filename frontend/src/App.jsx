@@ -6,15 +6,15 @@ import RegisterForm from './components/RegisterForm'
 import Dashboard from './components/Dashboard'
 import Welcome from './components/Welcome'
 import { useDispatch } from 'react-redux'
-// import { refreshAccessToken } from './store/slices/authSlice'
+import { refreshAccessToken } from './store/slices/authSlice'
 
 function App() {
   const dispatch = useDispatch()
 
-  // useEffect(() => {
-  //   // try to refresh access token on app start (backend reads httpOnly cookie)
-  //   dispatch(refreshAccessToken())
-  // }, [dispatch])
+  useEffect(() => {
+    // try to refresh access token on app start (backend reads httpOnly cookie)
+    dispatch(refreshAccessToken())
+  }, [dispatch])
 
   return (
     <BrowserRouter>

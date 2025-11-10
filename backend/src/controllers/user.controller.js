@@ -134,15 +134,23 @@ export const logout = asyncHandler(async (req, res) => {
 
 export const refreshAccessToken = asyncHandler(async (req, res) => {
     try {
-        const { refreshToken } = req.cookies.refreshToken;
+        // Read the refresh token from cookies
+        const refreshToken = req.cookies?.refreshToken;
         if (!refreshToken) {
             throw new ApiError(400, "Refresh token is required");
         }
+
         const decoded = verifyRefreshToken(refreshToken);
         const [users] = await pool.query("SELECT * FROM users WHERE id = ?", [decoded.id]);
         if (users.length === 0 || users[0].refresh_token !== refreshToken) {
             throw new ApiError(401, "Invalid refresh token");
         }
+
+        const newAccessToken = generateAccessToken({
+            id: users[0].id,
+            email: users[0].email,
+            username: users[0].username
+        });
 
         const accessOptions = {
             httpOnly: true,
@@ -160,20 +168,17 @@ export const refreshAccessToken = asyncHandler(async (req, res) => {
             path: '/'
         };
 
-        const newAccessToken = generateAccessToken({
-            id: users[0].id,
-            email: users[0].email,
-            username: users[0].username
-        })
-
+        // return the new access token and basic user info in the response data
         return res 
             .status(200)
             .cookie("accessToken", newAccessToken, accessOptions)
             .cookie("refreshToken", refreshToken, refreshOptions)
-            .json(new ApiResponse(200, { accessToken: newAccessToken }, "Access token refreshed successfully"));
+            .json(new ApiResponse(200, { accessToken: newAccessToken, user: { id: users[0].id, username: users[0].username, email: users[0].email } }, "Access token refreshed successfully"));
 
     } catch (error) {
-        
+        console.log("Error while refreshing access token:", error);
+        const status = error?.statusCode || 500;
+        return res.status(status).json(new ApiResponse(status, null, error?.message || 'Failed to refresh token'));
     }
 })
 

@@ -56,10 +56,24 @@ export const logoutUser = createAsyncThunk(
   }
 );
 
+// Refresh access token (server reads httpOnly cookie)
+export const refreshAccessToken = createAsyncThunk(
+  'auth/refresh',
+  async (_, { rejectWithValue }) => {
+    try {
+      const res = await api.post('/api/users/refresh-token');
+      return res.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data?.message || err.message);
+    }
+  }
+);
+
 const initialState = {
-  user: null,
+  user: null, // do not persist user in localStorage; rely on httpOnly refresh cookie + refresh endpoint
   loading: false,
-  error: null
+  error: null,
+  accessToken: null
 };
 
 const authSlice = createSlice({
@@ -113,6 +127,7 @@ const authSlice = createSlice({
           // if backend returned the user object directly
           state.user = payloadData;
         }
+  // user is set from response; do NOT persist to localStorage to avoid storing auth state in JS-accessible storage
         // if (action.payload?.accessToken) state.accessToken = action.payload.accessToken;
       })
       .addCase(loginUser.rejected, (state, action) => {
@@ -121,6 +136,23 @@ const authSlice = createSlice({
       })
 
       // refresh
+      .addCase(refreshAccessToken.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(refreshAccessToken.fulfilled, (state, action) => {
+        state.loading = false;
+        const payloadData = action.payload?.data ?? action.payload;
+        if (payloadData?.accessToken) state.accessToken = payloadData.accessToken;
+        if (payloadData?.user) {
+          state.user = payloadData.user;
+        }
+      })
+      .addCase(refreshAccessToken.rejected, (state) => {
+        state.loading = false;
+        state.user = null;
+        state.accessToken = null;
+      })
+
       // .addCase(refreshAccessToken.pending, (state) => {
       //   state.loading = true;
       // })
