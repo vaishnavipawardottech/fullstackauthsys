@@ -5,6 +5,7 @@ import LoginForm from './components/LoginForm'
 import RegisterForm from './components/RegisterForm'
 import Dashboard from './components/Dashboard'
 import Navbar from './components/Navbar'
+import Welcome from './components/Welcome'
 import { useDispatch } from 'react-redux'
 import { refreshAccessToken } from './store/slices/authSlice'
 
@@ -21,9 +22,10 @@ function App() {
       <Navbar />
 
       <Routes>
-        <Route path="/" element={<LoginForm />} />
+        <Route path="/login" element={<LoginForm />} />
         <Route path="/register" element={<RegisterForm />} />
-        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/welcome" element={<Welcome />} />
       </Routes>
     </BrowserRouter>
   )

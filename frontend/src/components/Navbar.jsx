@@ -1,39 +1,19 @@
 import React from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { useSelector, useDispatch } from 'react-redux'
-import { selectCurrentUser, logoutUser } from '../store/slices/authSlice'
+import { Link } from 'react-router-dom'
 
 export default function Navbar() {
-  const user = useSelector(selectCurrentUser)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
+  
 
-  const handleLogout = async () => {
-    await dispatch(logoutUser())
-    navigate('/')
-  }
+    return (
+      <header className="fixed inset-x-0 top-0 z-50 flex items-center justify-between px-6 py-3 bg-white border-b border-gray-200">
+        <div className="flex items-center gap-4">
+          <Link to="/" className="font-bold text-2xl ml-30">AuthSys</Link>
+        </div>
 
-  return (
-    <header style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '12px 16px', borderBottom: '1px solid #e5e7eb' }}>
-      <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-        <Link to="/" style={{ textDecoration: 'none', fontWeight: '600' }}>AuthSys</Link>
-        <nav style={{ display: 'flex', gap: 12 }}>
-          <Link to="/">Login</Link>
-          <Link to="/register">Register</Link>
-          <Link to="/dashboard">Dashboard</Link>
-        </nav>
-      </div>
-
-      <div>
-        {user ? (
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <span>Hi, {user.username}</span>
-            <button onClick={handleLogout}>Logout</button>
-          </div>
-        ) : (
-          <span style={{ color: '#6b7280' }}>Not logged in</span>
-        )}
-      </div>
-    </header>
-  )
+        <div className="flex items-center gap-3 mr-30">
+          <Link to="/login" className="px-5 py-2.5 rounded-md border border-black text-sm font-medium text-gray-700 hover:bg-gray-100">Login</Link>
+          <Link to="/register" className="px-5 py-2.5 rounded-md text-sm font-medium bg-indigo-600 text-white hover:bg-indigo-700 shadow">Register</Link>
+        </div>
+      </header>
+    )
 }
