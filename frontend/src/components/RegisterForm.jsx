@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerUser, selectAuthStatus, selectAuthError } from '../store/slices/authSlice'
+import { registerUser, selectAuthLoading, selectAuthError } from '../store/slices/authSlice'
 import { useNavigate } from 'react-router-dom'
 
 export default function RegisterForm() {
@@ -10,7 +10,7 @@ export default function RegisterForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const status = useSelector(selectAuthStatus)
+  const status = useSelector(selectAuthLoading)
   const error = useSelector(selectAuthError)
 
   async function handleSubmit(e) {

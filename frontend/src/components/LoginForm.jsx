@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { loginUser, selectAuthStatus, selectAuthError, selectCurrentUser } from '../store/slices/authSlice'
+import { loginUser, selectAuthError, selectCurrentUser } from '../store/slices/authSlice'
 import { useNavigate } from 'react-router-dom'
 
 export default function LoginForm() {
@@ -10,14 +10,14 @@ export default function LoginForm() {
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
-  const status = useSelector(selectAuthStatus)
   const error = useSelector(selectAuthError)
   const user = useSelector(selectCurrentUser)
 
-  async function handleSubmit(e) {
-    e.preventDefault()
+  const handleLogin = async (e) => {
+    // Simple onclick-based login: dispatch and navigate on success
+    e.preventDefault();
     const result = await dispatch(loginUser({ username, email, password }))
-    if (result.meta.requestStatus === 'fulfilled') {
+    if (result?.meta?.requestStatus === 'fulfilled') {
       navigate('/welcome')
     }
   }
@@ -27,7 +27,7 @@ export default function LoginForm() {
       <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-md">
         <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
+  <form className="flex flex-col gap-4 w-full">
           <input
             value={username}
             onChange={e => setUsername(e.target.value)}
@@ -56,11 +56,11 @@ export default function LoginForm() {
         />
 
         <button
-          type="submit"
-          disabled={status === 'loading'}
-          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 disabled:opacity-60 shadow"
+          type="button"
+          onClick={handleLogin}
+          className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 shadow"
         >
-          {status === 'loading' ? 'Logging in…' : 'Login'}
+          Login
         </button>
       </form>
 
