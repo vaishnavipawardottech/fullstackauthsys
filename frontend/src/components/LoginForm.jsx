@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { loginUser, selectAuthError, selectCurrentUser } from '../store/slices/authSlice'
+import { loginUser, selectAuthError, selectCurrentUser, clearAuthError } from '../store/slices/authSlice'
 import { useNavigate } from 'react-router-dom'
 
 export default function LoginForm() {
@@ -12,6 +12,11 @@ export default function LoginForm() {
 
   const error = useSelector(selectAuthError)
   const user = useSelector(selectCurrentUser)
+
+  // Clear any stale auth error when the login page mounts
+  useEffect(() => {
+    dispatch(clearAuthError())
+  }, [dispatch])
 
   const handleLogin = async (e) => {
     // Simple onclick-based login: dispatch and navigate on success
@@ -28,15 +33,6 @@ export default function LoginForm() {
         <h2 className="text-2xl font-semibold mb-4 text-center">Login</h2>
 
   <form className="flex flex-col gap-4 w-full">
-          <input
-            value={username}
-            onChange={e => setUsername(e.target.value)}
-            placeholder="Username"
-            className="border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-400"
-            type="text"
-            name="username"
-            required
-          />
         <input
           value={email}
           onChange={e => setEmail(e.target.value)}
@@ -65,7 +61,7 @@ export default function LoginForm() {
       </form>
 
       {error && <div className="text-red-600 mt-3">{error}</div>}
-      {user && <div className="text-green-600 mt-3">Logged in as {user.username}</div>}
+      {/* {user && <div className="text-green-600 mt-3">Logged in as {user.username}</div>} */}
       </div>
     </div>
   )

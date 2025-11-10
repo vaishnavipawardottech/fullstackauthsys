@@ -71,6 +71,10 @@ const authSlice = createSlice({
       state.accessToken = null;
       state.status = 'idle';
       state.error = null;
+    },
+    // clear only the error message (useful when navigating between auth pages)
+    clearAuthError(state) {
+      state.error = null;
     }
   },
   extraReducers: (builder) => {
@@ -135,7 +139,7 @@ const authSlice = createSlice({
   }
 });
 
-export const { clearAuth } = authSlice.actions;
+export const { clearAuth, clearAuthError } = authSlice.actions;
 
 // selectors
 export const selectCurrentUser = (state) => state.auth.user;

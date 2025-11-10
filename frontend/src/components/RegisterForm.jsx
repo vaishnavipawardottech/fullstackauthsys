@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerUser, selectAuthLoading, selectAuthError } from '../store/slices/authSlice'
+import { registerUser, selectAuthLoading, selectAuthError, clearAuthError } from '../store/slices/authSlice'
 import { useNavigate } from 'react-router-dom'
 
 export default function RegisterForm() {
@@ -13,6 +13,11 @@ export default function RegisterForm() {
   const status = useSelector(selectAuthLoading)
   const error = useSelector(selectAuthError)
 
+  // Clear auth error message when register page mounts
+  useEffect(() => {
+    dispatch(clearAuthError())
+  }, [dispatch])
+
   async function handleSubmit(e) {
     e.preventDefault()
     const result = await dispatch(registerUser({ username, email, password }))
@@ -23,10 +28,11 @@ export default function RegisterForm() {
   }
 
   return (
-    <div className="max-w-md mx-auto p-6">
-      <h2 className="text-2xl font-semibold mb-4">Register</h2>
+    <div className="min-h-screen flex items-center justify-center px-4 bg-gray-50">
+      <div className="w-full max-w-md p-6 bg-white border border-gray-200 rounded-lg shadow-md">
+        <h2 className="text-2xl font-semibold mb-4 text-center">Register</h2>
 
-      <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full">
         <input
           value={username}
           onChange={e => setUsername(e.target.value)}
@@ -63,6 +69,7 @@ export default function RegisterForm() {
       </form>
 
       {error && <div className="text-red-600 mt-3">{error}</div>}
+      </div>
     </div>
   )
 }
