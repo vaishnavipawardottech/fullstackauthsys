@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { registerUser, selectAuthLoading, selectAuthError, clearAuthError } from '../store/slices/authSlice'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 export default function RegisterForm() {
   const [username, setUsername] = useState('')
@@ -67,6 +67,11 @@ export default function RegisterForm() {
           {status === 'loading' ? 'Creating…' : 'Register'}
         </button>
       </form>
+
+      <div className="mt-4 text-sm text-center text-gray-600">
+        Already have an account?{' '}
+        <Link to="/login" className="text-indigo-600 hover:underline">Login here</Link>
+      </div>
 
       {error && <div className="text-red-600 mt-3">{error}</div>}
       </div>

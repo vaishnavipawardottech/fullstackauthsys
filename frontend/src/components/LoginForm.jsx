@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { loginUser, selectAuthError, selectCurrentUser, clearAuthError } from '../store/slices/authSlice'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
@@ -60,8 +60,12 @@ export default function LoginForm() {
         </button>
       </form>
 
+      <div className="mt-4 text-sm text-center text-gray-600">
+        Don't have an account?{' '}
+        <Link to="/register" className="text-indigo-600 hover:underline">Register</Link>
+      </div>
+
       {error && <div className="text-red-600 mt-3">{error}</div>}
-      {/* {user && <div className="text-green-600 mt-3">Logged in as {user.username}</div>} */}
       </div>
     </div>
   )
